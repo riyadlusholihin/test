@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -16,7 +17,9 @@ type Payload struct {
 }
 
 func main() {
-	http.Handler("/test", RouterSendPulsa)
+	http.HandleFunc("/test", RouterSendPulsa)
+	fmt.Println("starting web server at http://localhost:8080/")
+	http.ListenAndServe(":8080", nil)
 }
 
 func RouterSendPulsa(w http.ResponseWriter, r *http.Request) {
@@ -54,7 +57,7 @@ func BodyRequest(r *http.Request) (*Payload, int, error) {
 		return nil, http.StatusBadRequest, err
 	}
 
-	err = json.Unmarshal(body, pay)
+	err = json.Unmarshal(body, &pay)
 	if err != nil {
 		log.Info("Error while unmarshal")
 		return nil, http.StatusBadRequest, err
